@@ -2,7 +2,7 @@
 
 This practical explores the use of Eloquent relationships, specifically a one-to-many relationship which is implemented in Eloquent using _Has Many_ and _Belongs To_.
 
-The starting point for this practical is the [**Intro to Laravel**](https://github.com/CHT2520-web-prog/intro-to-laravel/blob/main/intro_to_Laravel.md) practical we did a couple of weeks ago. You'll need to complete this first before attempting the following practical work.
+The starting point for this practical is the [**Intro to Laravel**](https://github.com/CHT2520-web-prog/laravel-start) practical we did previously. You'll need to complete this first before attempting the following practical work.
 
 We will add an additional database table to this example to store information about the age rating certificate for films (U, PG, 15 etc.) and then modify the create and read functionality to make use of this table.
 
@@ -67,7 +67,7 @@ public function down(): void
 php artisan migrate:refresh
 ```
 
-- Using Adminer/phpmyadmin check the tables have been set up.
+- Using Adminer check the tables have been set up.
 
 ### Seeding
 
@@ -93,28 +93,45 @@ class CertificateSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('certificates')->insert(['name' => 'U', 'description' => 'Suitable for all', 'filename' => "u.png"]);
-        DB::table('certificates')->insert(['name' => 'PG', 'description' => 'Parental guidance', 'filename' => "pg.png"]);
-        DB::table('certificates')->insert(['name' => '12a', 'description' => 'Suitable for twelve years and over', 'filename' => "12a.png"]);
-        DB::table('certificates')->insert(['name' => '15', 'description' => 'Suitable for only for fifteen years and over', 'filename' => "15.png"]);
-        DB::table('certificates')->insert(['name' => '18', 'description' => 'Suitable for only for eighteen years and over', 'filename' => "18.png"]);
+        DB::table('certificates')->insert(['name' => 'U', 'description' => 'Suitable for all', 'filename' => "u.webp"]);
+        DB::table('certificates')->insert(['name' => 'PG', 'description' => 'Parental guidance', 'filename' => "pg.webp"]);
+        DB::table('certificates')->insert(['name' => '12a', 'description' => 'Suitable for twelve years and over', 'filename' => "12a.webp"]);
+        DB::table('certificates')->insert(['name' => '15', 'description' => 'Suitable for only for fifteen years and over', 'filename' => "15.webp"]);
+        DB::table('certificates')->insert(['name' => '18', 'description' => 'Suitable for only for eighteen years and over', 'filename' => "18.webp"]);
     }
 }
 ```
 
 - Next modify the existing _FilmSeeder.php_ file. Change the `run()` method so that we specify the _certificate_id_ for each film.
+    - We get the ID numbers of the certificates as variables. This is more robust than entering the ID number directly, as they can change.
 
 ```php
-public function run()
-{
-    DB::table('films')->insert(['title' => 'Jaws', 'year' => '1975', 'duration' => 124, 'certificate_id' => 4]);
-    DB::table('films')->insert(['title' => 'Winter\'s Bone', 'year' => '2010', 'duration' => 100, 'certificate_id' => 4]);
-    DB::table('films')->insert(['title' => 'Do The Right Thing', 'year' => '1989', 'duration' => 120, 'certificate_id' => 4]);
-    DB::table('films')->insert(['title' => 'The Incredibles', 'year' => '2004', 'duration' => 15, 'certificate_id' => 1]);
-    DB::table('films')->insert(['title' => 'The Godfather', 'year' => '1972', 'duration' => 177, 'certificate_id' => 5]);
-    DB::table('films')->insert(['title' => 'Spirited Away', 'year' => '2001', 'duration' => 124, 'certificate_id' => 2]);
-    DB::table('films')->insert(['title' => 'Moonlight', 'year' => '2016', 'duration' => 111, 'certificate_id' => 4]);
-}
+public function run(): void
+    {
+        $u = DB::table('certificates')->where('name', 'U')->value('id');
+        $pg = DB::table('certificates')->where('name', 'PG')->value('id');
+        $a12 = DB::table('certificates')->where('name', '12a')->value('id');
+        $a15 = DB::table('certificates')->where('name', '15')->value('id');
+        $a18 = DB::table('certificates')->where('name', '18')->value('id');
+
+        DB::table('films')->insert([
+            ['title' => "Winter's Bone",      'year' => 2010, 'duration' => 100, 'certificate_id' => $a15],
+            ['title' => "Do The Right Thing", 'year' => 1989, 'duration' => 120, 'certificate_id' => $a15],
+            ['title' => "The Incredibles",    'year' => 2004, 'duration' => 115, 'certificate_id' => $u],
+            ['title' => "The Godfather",      'year' => 1972, 'duration' => 177, 'certificate_id' => $a18],
+            ['title' => "Dangerous Minds",    'year' => 1995, 'duration' => 99,  'certificate_id' => $a12],
+            ['title' => "Spirited Away",      'year' => 2001, 'duration' => 124, 'certificate_id' => $pg],
+            ['title' => "Moonlight",          'year' => 2016, 'duration' => 111, 'certificate_id' => $a15],
+            ['title' => "Life of PI",         'year' => 2012, 'duration' => 127, 'certificate_id' => $pg],
+            ['title' => "Gravity",            'year' => 2013, 'duration' => 91,  'certificate_id' => $a12],
+            ['title' => "Arrival",            'year' => 2016, 'duration' => 116, 'certificate_id' => $a12],
+            ['title' => "Wonder Woman",       'year' => 2017, 'duration' => 141, 'certificate_id' => $a12],
+            ['title' => "Mean Girls",         'year' => 2004, 'duration' => 97,  'certificate_id' => $a12],
+            ['title' => "Inception",          'year' => 2010, 'duration' => 108, 'certificate_id' => $a12],
+            ['title' => "Donnie Darko",       'year' => 2001, 'duration' => 113, 'certificate_id' => $a15],
+            ['title' => "Get Out",            'year' => 2017, 'duration' => 117, 'certificate_id' => $a15],
+        ]);
+    }
 ```
 
 - Add the CertificateSeeder to the `run()` method of _DatabaseSeeder_
@@ -137,9 +154,9 @@ public function run(): void
 php artisan db:seed
 ```
 
-- Check Adminer/phpmyadmin to make sure the tables have been populated
+- Check Adminer to make sure the tables have been populated
 
-> Remember if you get in a mess with setting up the database tables you can always run `php artisan db:wipe` to delete all your tables. You can then run the migrations and seeding to set everything up.
+> Remember if you get in a mess with setting up the database tables you can always run `php artisan migrate:fresh --seed` to re-create your table. A more drastic action is `php artisan db:wipe` to delete all your tables. You can then run the migrations and seeding to set everything up.
 
 ## Setting Up The Eloquent Relationship
 
@@ -189,7 +206,7 @@ class Film extends Model
 
 > Pay careful attention to the naming conventions we have used. A film belongs to a single certificate so we use a singular `certificate()` for the method name. A certificate has many films, so we use the plural `films()` as the method name.
 
-- See https://laravel.com/docs/12.x/eloquent-relationships for more detail on how relationships work in Eloquent.
+- See https://laravel.com/docs/eloquent-relationships for more detail on how relationships work in Eloquent.
 
 ### Testing This Works
 
@@ -263,7 +280,7 @@ On the create view, when the user adds a new film they will need to choose the c
 - Modify the _create()_ method of _FilmController_ so that a complete list of all the certificates is passed to the create view (you will also need to import the Certificate class at the top of the file (like we did for the Film class)).
 
 ```php
-function create()
+public function create()
 {
     $certificates = Certificate::all();
     return view('films.create', ['certificates' => $certificates]);
@@ -301,6 +318,7 @@ function create()
 ```php
 function store(Request $request)
 {
+    //You may have some validation code in here.
     $film = new Film();
     $film->title = $request->title;
     $film->year = $request->year;
@@ -332,7 +350,7 @@ use Illuminate\Http\Request;
 
 class CertificateController extends Controller
 {
-    function index(){
+    public function index(){
         dd("Certificate Controller working");
     }
 }
@@ -358,7 +376,7 @@ use Illuminate\Http\Request;
 
 class CertificateController extends Controller
 {
-    function index()
+    public function index()
     {
         $certificates = Certificate::all();
         return view('certificates.index', ['certificates' => $certificates]);
@@ -401,7 +419,6 @@ class CertificateController extends Controller
 - Test this works.
 
 ## Test Your Understanding
-
 - If you look at the migration and seeding for the certificates table you will see we specified a filename for each certificate. It would be nice if we could use this to display images for the certificates.
   - Have a look online e.g. https://en.wikipedia.org/wiki/British_Board_of_Film_Classification#Current_certificates and download copies of images for each certificate.
   - Create a new folder called _images_ in the _public_ folder.
@@ -413,6 +430,6 @@ class CertificateController extends Controller
 
 This is a fairly brief introduction to relationships in Eloquent. Here are some more topics to investigate:
 
-- Implementing many-to-many relationships https://laravel.com/docs/12.x/eloquent-relationships#many-to-many
-- Query Scopes - https://laravel.com/docs/12.x/eloquent#query-scopes
-- Eager loading and the "N + 1" query problem - https://laravel.com/docs/12.x/eloquent-relationships#eager-loading
+- Implementing many-to-many relationships https://laravel.com/docs/eloquent-relationships#many-to-many
+- Query Scopes - https://laravel.com/docs/eloquent#query-scopes
+- Eager loading and the "N + 1" query problem - https://laravel.com/docs/eloquent-relationships#eager-loading
