@@ -197,6 +197,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Film extends Model
 {
+    public function getAge(): int
+    {
+        return Date('Y') - $this->year;
+    }
     public function certificate(): BelongsTo
     {
         return $this->belongsTo(Certificate::class);
