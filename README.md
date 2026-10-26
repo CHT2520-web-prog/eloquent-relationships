@@ -301,7 +301,7 @@ public function create()
     <label for="{{$certificate->name}}">
       <input
         type="radio"
-        name="certificate_id"
+        name="certificate"
         id="{{$certificate->name}}"
         value="{{$certificate->id}}"
       />
@@ -327,7 +327,7 @@ function store(Request $request)
     $film->title = $request->title;
     $film->year = $request->year;
     $film->duration = $request->duration;
-    $film->certificate_id = $request->certificate_id;
+    $film->certificate_id = $request->certificate;
     $film->save();
     return redirect('/films');
 }
@@ -423,6 +423,7 @@ class CertificateController extends Controller
 - Test this works.
 
 ## Test Your Understanding
+- This example doesn't validate the certificate when the user create a new film. How can you add suitable user input validation, including error messages and re-populating the form control.
 - If you look at the migration and seeding for the certificates table you will see we specified a filename for each certificate. It would be nice if we could use this to display images for the certificates.
   - Have a look online e.g. https://en.wikipedia.org/wiki/British_Board_of_Film_Classification#Current_certificates and download copies of images for each certificate.
   - Create a new folder called _images_ in the _public_ folder.
